@@ -590,6 +590,8 @@ document.querySelectorAll('.rv').forEach(el=>ro.observe(el));
 
 function fp(cat,btn){document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');document.querySelectorAll('.pcard').forEach(c=>{c.style.display=(cat==='all'||c.dataset.cat.includes(cat))?'':'none';});}
 
+const FORM_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxq87dnlN8QXPWm5q6eGbna9By0qtUwfwSfqDs0c856RT_fNyS9lzgbLLyRrrjZwGTB/exec";
+
 async function hs(){
   const n = document.getElementById('name').value.trim();
   const e = document.getElementById('email').value.trim();
@@ -610,7 +612,14 @@ async function hs(){
   st.textContent = '';
 
   try{
-    st.textContent = "✦ Message noted! I'll reach out soon.";
+    await fetch(FORM_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ name: n, email: e, subject: subj, message: m })
+    });
+
+    st.textContent = "✦ Message sent! I'll reach out soon.";
     st.style.color = 'var(--mt)';
 
     document.getElementById('name').value = '';
@@ -620,7 +629,7 @@ async function hs(){
 
   }catch(err){
     console.error(err);
-    st.textContent = '✕ Something went wrong.';
+    st.textContent = '✕ Something went wrong. Please email me directly.';
     st.style.color = 'var(--pk)';
   }finally{
     btn.textContent = 'Send Message →';
